@@ -1,0 +1,13 @@
+{
+  "name": "volunteer-signin-app",
+  "version": "1.0.0",
+  "description": "Easy-to-use volunteer sign-in / sign-out kiosk app",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
