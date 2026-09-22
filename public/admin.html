@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Volunteer History</title>
+<link rel="stylesheet" href="style.css" />
+<style>
+  table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 1rem; }
+  th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--color-border); }
+  th { background: #eef2ee; }
+  .top-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
+  .top-actions a.btn { text-decoration: none; text-align: center; width: auto; padding: 14px 20px; display: inline-block; }
+  .open-row { color: var(--color-primary); font-weight: 700; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <h1>Volunteer History</h1>
+</header>
+
+<main id="app" style="max-width: 960px;">
+  <div class="top-actions">
+    <a href="index.html" class="btn btn-primary">&larr; Back to Sign In</a>
+    <a href="/api/history/export.csv" class="btn btn-primary">Download CSV</a>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Date</th>
+        <th>Sign In</th>
+        <th>Sign Out</th>
+        <th>Duration</th>
+      </tr>
+    </thead>
+    <tbody id="history-body"></tbody>
+  </table>
+</main>
+
+<script>
+  async function load() {
+    const res = await fetch('/api/history');
+    const rows = await res.json();
+    const body = document.getElementById('history-body');
+    body.innerHTML = '';
+    rows.forEach((r) => {
+      const tr = document.createElement('tr');
+      const signIn = new Date(r.signInTime).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+      const signOut = r.signOutTime
+        ? new Date(r.signOutTime).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+        : '';
+      let duration = '';
+      if (r.durationMinutes !== null) {
+        const h = Math.floor(r.durationMinutes / 60);
+        const m = r.durationMinutes % 60;
+        duration = h > 0 ? `${h} hr ${m} min` : `${m} min`;
+      }
+      tr.innerHTML = `
+        <td>${r.firstName} ${r.lastName}</td>
+        <td>${r.date}</td>
+        <td>${signIn}</td>
+        <td class="${r.signOutTime ? '' : 'open-row'}">${signOut || 'Still signed in'}</td>
+        <td>${duration}</td>
+      `;
+      body.appendChild(tr);
+    });
+  }
+  load();
+</script>
+</body>
+</html>

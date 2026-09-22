@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Volunteer Sign In</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <h1>Volunteer Sign In</h1>
+  <div id="clock" class="clock"></div>
+</header>
+
+<main id="app">
+
+  <!-- HOME VIEW -->
+  <section id="view-home" class="view">
+    <button id="btn-new-volunteer" class="btn btn-primary btn-huge">
+      + I'm a New Volunteer
+    </button>
+
+    <label for="search" class="search-label">Find your name</label>
+    <input
+      id="search"
+      type="text"
+      class="search-input"
+      placeholder="Start typing your name..."
+      autocomplete="off"
+    />
+
+    <div id="volunteer-list" class="volunteer-list"></div>
+    <p id="no-results" class="no-results hidden">No matching names. Try "New Volunteer" above.</p>
+  </section>
+
+  <!-- CONFIRM SIGN IN / OUT VIEW -->
+  <section id="view-confirm" class="view hidden">
+    <button class="btn btn-back" id="confirm-back">&larr; Back</button>
+    <h2 id="confirm-name" class="big-name"></h2>
+    <p id="confirm-status" class="status-text"></p>
+    <button id="confirm-action" class="btn btn-huge btn-action"></button>
+  </section>
+
+  <!-- NEW VOLUNTEER FORM VIEW -->
+  <section id="view-new" class="view hidden">
+    <button class="btn btn-back" id="new-back">&larr; Back</button>
+    <h2>Welcome! Let's get you signed in.</h2>
+    <form id="new-form">
+      <label class="field-label" for="firstName">First Name</label>
+      <input id="firstName" name="firstName" class="field-input" type="text" required />
+
+      <label class="field-label" for="lastName">Last Name</label>
+      <input id="lastName" name="lastName" class="field-input" type="text" required />
+
+      <label class="field-label" for="email">Email <span class="optional">(optional)</span></label>
+      <input id="email" name="email" class="field-input" type="email" />
+
+      <label class="field-label" for="address">Address <span class="optional">(optional)</span></label>
+      <input id="address" name="address" class="field-input" type="text" />
+
+      <p id="new-error" class="error-text hidden"></p>
+
+      <button type="submit" class="btn btn-huge btn-primary">Save &amp; Sign In</button>
+    </form>
+  </section>
+
+  <!-- SUCCESS VIEW -->
+  <section id="view-success" class="view hidden">
+    <div id="success-icon" class="success-icon">&#10003;</div>
+    <h2 id="success-message" class="big-name"></h2>
+    <p id="success-detail" class="status-text"></p>
+    <button id="success-done" class="btn btn-huge btn-primary">Done</button>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <a href="admin.html">Volunteer History &amp; Reports</a>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
