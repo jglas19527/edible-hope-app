@@ -4,14 +4,19 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Volunteer History</title>
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="icon" href="icons/icon-192.png" />
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+<meta name="theme-color" content="#1a6b3c" />
 <link rel="stylesheet" href="style.css" />
 <style>
   table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 1rem; }
   th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--color-border); }
   th { background: #eef2ee; }
   .top-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
-  .top-actions a.btn { text-decoration: none; text-align: center; width: auto; padding: 14px 20px; display: inline-block; }
+  .top-actions a.btn, .top-actions button.btn { text-decoration: none; text-align: center; width: auto; padding: 14px 20px; display: inline-block; }
   .open-row { color: var(--color-primary); font-weight: 700; }
+  .note { font-size: 0.95rem; color: var(--color-muted); margin-top: 8px; }
 </style>
 </head>
 <body>
@@ -23,8 +28,9 @@
 <main id="app" style="max-width: 960px;">
   <div class="top-actions">
     <a href="index.html" class="btn btn-primary">&larr; Back to Sign In</a>
-    <a href="/api/history/export.csv" class="btn btn-primary">Download CSV</a>
+    <button type="button" id="download-csv" class="btn btn-primary">Download CSV</button>
   </div>
+  <p class="note">This history is stored on this device only. Download a CSV backup regularly.</p>
 
   <table>
     <thead>
@@ -40,35 +46,8 @@
   </table>
 </main>
 
-<script>
-  async function load() {
-    const res = await fetch('/api/history');
-    const rows = await res.json();
-    const body = document.getElementById('history-body');
-    body.innerHTML = '';
-    rows.forEach((r) => {
-      const tr = document.createElement('tr');
-      const signIn = new Date(r.signInTime).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-      const signOut = r.signOutTime
-        ? new Date(r.signOutTime).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
-        : '';
-      let duration = '';
-      if (r.durationMinutes !== null) {
-        const h = Math.floor(r.durationMinutes / 60);
-        const m = r.durationMinutes % 60;
-        duration = h > 0 ? `${h} hr ${m} min` : `${m} min`;
-      }
-      tr.innerHTML = `
-        <td>${r.firstName} ${r.lastName}</td>
-        <td>${r.date}</td>
-        <td>${signIn}</td>
-        <td class="${r.signOutTime ? '' : 'open-row'}">${signOut || 'Still signed in'}</td>
-        <td>${duration}</td>
-      `;
-      body.appendChild(tr);
-    });
-  }
-  load();
-</script>
+<script src="db.js"></script>
+<script src="admin.js"></script>
+<script src="register-sw.js"></script>
 </body>
 </html>

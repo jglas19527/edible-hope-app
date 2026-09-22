@@ -7,7 +7,6 @@
   };
 
   let volunteers = [];
-  let selectedId = null;
   let returnTimer = null;
 
   function showView(name) {
@@ -33,9 +32,8 @@
   updateClock();
   setInterval(updateClock, 15000);
 
-  async function fetchVolunteers() {
-    const res = await fetch('/api/volunteers');
-    volunteers = await res.json();
+  function refreshVolunteers() {
+    volunteers = VolunteerDB.listVolunteers();
     renderList();
   }
 
@@ -58,7 +56,7 @@
       btn.type = 'button';
       btn.className = 'volunteer-btn';
       btn.innerHTML = `<span>${escapeHtml(v.firstName)} ${escapeHtml(v.lastName)}</span>`;
-      if (v.signedIn) {
+      if (VolunteerDB.getOpenSession(v.id)) {
         const badge = document.createElement('span');
         badge.className = 'badge';
         badge.textContent = 'Signed In';
@@ -75,23 +73,22 @@
     return div.innerHTML;
   }
 
-  async function openConfirm(id) {
-    selectedId = id;
-    const res = await fetch(`/api/volunteers/${id}`);
-    if (!res.ok) {
-      await fetchVolunteers();
+  function openConfirm(id) {
+    const volunteer = VolunteerDB.getVolunteer(id);
+    if (!volunteer) {
+      refreshVolunteers();
       return;
     }
-    const volunteer = await res.json();
 
     document.getElementById('confirm-name').textContent =
       `${volunteer.firstName} ${volunteer.lastName}`;
 
     const actionBtn = document.getElementById('confirm-action');
     const statusText = document.getElementById('confirm-status');
+    const openSession = VolunteerDB.getOpenSession(volunteer.id);
 
-    if (volunteer.signedIn) {
-      const signInTime = new Date(volunteer.openSession.signInTime);
+    if (openSession) {
+      const signInTime = new Date(openSession.signInTime);
       statusText.textContent = `Signed in at ${signInTime.toLocaleTimeString([], {
         hour: 'numeric',
         minute: '2-digit',
@@ -109,33 +106,36 @@
     showView('confirm');
   }
 
-  async function doSignIn(id) {
-    const res = await fetch(`/api/volunteers/${id}/signin`, { method: 'POST' });
-    const data = await res.json();
-    if (!res.ok) return showError(data.error);
+  function doSignIn(id) {
+    const volunteer = VolunteerDB.getVolunteer(id);
+    const session = VolunteerDB.signIn(id);
     showSuccess(
-      `You're signed in, ${data.volunteer.firstName}!`,
-      `Signed in at ${new Date(data.session.signInTime).toLocaleTimeString([], {
+      `You're signed in, ${volunteer.firstName}!`,
+      `Signed in at ${new Date(session.signInTime).toLocaleTimeString([], {
         hour: 'numeric',
         minute: '2-digit',
       })}. Thank you for volunteering!`
     );
   }
 
-  async function doSignOut(id) {
-    const res = await fetch(`/api/volunteers/${id}/signout`, { method: 'POST' });
-    const data = await res.json();
-    if (!res.ok) return showError(data.error);
+  function doSignOut(id) {
+    const volunteer = VolunteerDB.getVolunteer(id);
+    let session;
+    try {
+      session = VolunteerDB.signOut(id);
+    } catch (err) {
+      return showError(err.message);
+    }
 
-    const inTime = new Date(data.session.signInTime);
-    const outTime = new Date(data.session.signOutTime);
+    const inTime = new Date(session.signInTime);
+    const outTime = new Date(session.signOutTime);
     const minutes = Math.round((outTime - inTime) / 60000);
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
     const duration = hours > 0 ? `${hours} hr ${mins} min` : `${mins} min`;
 
     showSuccess(
-      `See you next time, ${data.volunteer.firstName}!`,
+      `See you next time, ${volunteer.firstName}!`,
       `You volunteered for ${duration} today. Thank you!`
     );
   }
@@ -148,15 +148,14 @@
     document.getElementById('success-message').textContent = message;
     document.getElementById('success-detail').textContent = detail;
     showView('success');
-    fetchVolunteers();
+    refreshVolunteers();
     returnTimer = setTimeout(goHome, 6000);
   }
 
   function goHome() {
     document.getElementById('search').value = '';
-    selectedId = null;
     showView('home');
-    fetchVolunteers();
+    refreshVolunteers();
   }
 
   document.getElementById('btn-new-volunteer').addEventListener('click', () => {
@@ -171,7 +170,7 @@
 
   document.getElementById('search').addEventListener('input', renderList);
 
-  document.getElementById('new-form').addEventListener('submit', async (e) => {
+  document.getElementById('new-form').addEventListener('submit', (e) => {
     e.preventDefault();
     const errorEl = document.getElementById('new-error');
     errorEl.classList.add('hidden');
@@ -181,34 +180,25 @@
     const email = document.getElementById('email').value.trim();
     const address = document.getElementById('address').value.trim();
 
-    if (!firstName || !lastName) {
-      errorEl.textContent = 'Please enter your first and last name.';
+    let volunteer;
+    try {
+      volunteer = VolunteerDB.createVolunteer({ firstName, lastName, email, address });
+    } catch (err) {
+      errorEl.textContent = err.message || 'Something went wrong.';
       errorEl.classList.remove('hidden');
       return;
     }
 
-    const res = await fetch('/api/volunteers', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ firstName, lastName, email, address }),
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      errorEl.textContent = data.error || 'Something went wrong.';
-      errorEl.classList.remove('hidden');
-      return;
-    }
-
-    const signinRes = await fetch(`/api/volunteers/${data.id}/signin`, { method: 'POST' });
-    const signinData = await signinRes.json();
+    const session = VolunteerDB.signIn(volunteer.id);
 
     showSuccess(
-      `Welcome, ${data.firstName}!`,
-      `You're all signed in as of ${new Date(
-        signinData.session.signInTime
-      ).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}. Thanks for volunteering!`
+      `Welcome, ${volunteer.firstName}!`,
+      `You're all signed in as of ${new Date(session.signInTime).toLocaleTimeString([], {
+        hour: 'numeric',
+        minute: '2-digit',
+      })}. Thanks for volunteering!`
     );
   });
 
-  fetchVolunteers();
+  refreshVolunteers();
 })();
