@@ -28,6 +28,14 @@ can be installed to a tablet's or computer's home screen like a native app.
   session).
 - **History & reports page** (`admin.html`) lists every sign-in/out with the
   computed duration and lets staff download a CSV for record-keeping.
+- **Admin dashboard** (`dashboard.html`) shows volunteer stats (total
+  volunteers, who's currently clocked in, total/weekly/monthly hours, top
+  volunteers by hours) and lets staff record how many meals were served
+  each day, with a running total for the week and month.
+- **PIN-protected admin pages** — `admin.html` and `dashboard.html` show
+  volunteer names, emails, and addresses, so both are behind a PIN prompt
+  (see "Changing the admin PIN" below). This is a lightweight deterrent,
+  not real security — see that section for the tradeoffs.
 
 ## How data storage works
 
@@ -40,6 +48,29 @@ internet connection, but it also means:
   "Download CSV" button on the History page regularly to back it up.
 - Clearing that browser's site data/cache for this app will erase the
   volunteer log, so avoid "Clear browsing data" on the kiosk device.
+- **The admin dashboard reads this same on-device data**, so viewing it from
+  a phone or laptop that isn't the sign-in kiosk will show an empty
+  dashboard — there's no shared/remote database. Open `dashboard.html` on
+  the same device volunteers actually clock in on.
+
+## Changing the admin PIN
+
+`admin.html` and `dashboard.html` are behind a PIN prompt (default PIN:
+**260695**). This is implemented client-side (see `public/admin-auth.js`)
+with no backend, so it's a deterrent against casual visitors finding the
+volunteer list, not real security — anyone willing to read the source and
+brute-force a short PIN can get past it.
+
+To change it, compute a new SHA-256 hash and paste it into
+`public/admin-auth.js`:
+
+```bash
+node -e "console.log(require('crypto').createHash('sha256').update('NEWPIN').digest('hex'))"
+```
+
+Replace the `PIN_HASH` constant at the top of `admin-auth.js` with the
+output, commit, and redeploy. The PIN unlocks per browser tab session
+(`sessionStorage`), so staff re-enter it after closing the tab/browser.
 
 ## Running it
 
@@ -67,9 +98,13 @@ elsewhere.
 
 - `server.js` — a plain static file server (`npm start`); it has no
   involvement in storing sign-in data.
-- `public/db.js` — the client-side data store (volunteers + sign-in/out
-  sessions), saved to the browser's local storage.
+- `public/db.js` — the client-side data store (volunteers, sign-in/out
+  sessions, meals-served entries, and dashboard stats), saved to the
+  browser's local storage.
 - `public/index.html` / `app.js` — the sign-in kiosk.
 - `public/admin.html` / `admin.js` — history & CSV export.
+- `public/dashboard.html` / `dashboard.js` — admin dashboard (volunteer
+  stats, top volunteers, meals-served entry and totals).
+- `public/admin-auth.js` — the PIN gate shared by both admin pages.
 - `public/manifest.webmanifest`, `public/sw.js` — what make the app
   installable and offline-capable.

@@ -235,6 +235,117 @@ html, body {
   display: none !important;
 }
 
+/* --- Admin PIN gate --- */
+
+.admin-gate {
+  position: fixed;
+  inset: 0;
+  background: var(--color-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 1000;
+}
+
+.admin-gate-box {
+  width: 100%;
+  max-width: 360px;
+  background: var(--color-card);
+  border: 3px solid var(--color-border);
+  border-radius: 16px;
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.admin-gate-box h2 {
+  margin-top: 0;
+}
+
+.admin-gate-box .field-input {
+  text-align: center;
+  letter-spacing: 0.3em;
+  margin: 16px 0;
+}
+
+/* --- Admin dashboard --- */
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.stat-tile {
+  background: var(--color-card);
+  border: 3px solid var(--color-border);
+  border-radius: 14px;
+  padding: 18px 16px;
+  text-align: center;
+}
+
+.stat-tile .stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  line-height: 1.1;
+}
+
+.stat-tile .stat-label {
+  font-size: 0.95rem;
+  color: var(--color-muted);
+  margin-top: 4px;
+}
+
+.section-heading {
+  margin-top: 36px;
+  margin-bottom: 8px;
+}
+
+.meals-form {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  background: var(--color-card);
+  border: 3px solid var(--color-border);
+  border-radius: 14px;
+  padding: 18px;
+}
+
+.meals-form .field-group {
+  flex: 1;
+  min-width: 140px;
+}
+
+.meals-form .field-label {
+  margin-top: 0;
+}
+
+.meals-form button {
+  margin: 0;
+  width: auto;
+  padding: 18px 28px;
+}
+
+.top-volunteers-list {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+}
+
+.top-volunteers-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 4px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.top-volunteers-list .tv-hours {
+  color: var(--color-muted);
+}
+
 @media (max-width: 480px) {
   html, body {
     font-size: 18px;

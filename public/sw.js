@@ -1,14 +1,18 @@
 // Cache-first app shell so the sign-in kiosk keeps working with zero
 // network connection once it has been opened one time.
-const CACHE_NAME = 'volunteer-app-shell-v1';
+const CACHE_NAME = 'volunteer-app-shell-v2';
 const APP_SHELL = [
   './',
   './index.html',
   './admin.html',
+  './dashboard.html',
   './style.css',
   './app.js',
   './admin.js',
+  './dashboard.js',
+  './admin-auth.js',
   './db.js',
+  './register-sw.js',
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png',
