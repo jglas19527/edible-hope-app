@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>Volunteer Sign In</title>
+<title>Volunteer Clock In</title>
 <link rel="manifest" href="manifest.webmanifest" />
 <link rel="icon" href="icons/icon-192.png" />
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
@@ -16,7 +16,7 @@
 <body>
 
 <header class="topbar">
-  <h1>Volunteer Sign In</h1>
+  <h1>Volunteer Clock In</h1>
   <div id="clock" class="clock"></div>
 </header>
 
@@ -41,7 +41,7 @@
     <p id="no-results" class="no-results hidden">No matching names. Try "New Volunteer" above.</p>
   </section>
 
-  <!-- CONFIRM SIGN IN / OUT VIEW -->
+  <!-- CONFIRM CLOCK IN / OUT VIEW -->
   <section id="view-confirm" class="view hidden">
     <button class="btn btn-back" id="confirm-back">&larr; Back</button>
     <h2 id="confirm-name" class="big-name"></h2>
@@ -52,7 +52,7 @@
   <!-- NEW VOLUNTEER FORM VIEW -->
   <section id="view-new" class="view hidden">
     <button class="btn btn-back" id="new-back">&larr; Back</button>
-    <h2>Welcome! Let's get you signed in.</h2>
+    <h2>Welcome! Let's get you clocked in.</h2>
     <form id="new-form">
       <label class="field-label" for="firstName">First Name</label>
       <input id="firstName" name="firstName" class="field-input" type="text" required />
@@ -68,7 +68,7 @@
 
       <p id="new-error" class="error-text hidden"></p>
 
-      <button type="submit" class="btn btn-huge btn-primary">Save &amp; Sign In</button>
+      <button type="submit" class="btn btn-huge btn-primary">Save &amp; Clock In</button>
     </form>
   </section>
 
