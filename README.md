@@ -12,7 +12,7 @@ can be installed to a tablet's or computer's home screen like a native app.
 
 - **Huge, touch-friendly buttons** — nothing tiny to tap.
 - **Installable** — "Add to Home Screen" (or the install icon in the
-  browser's address bar) puts a Volunteer Sign In icon on the device that
+  browser's address bar) puts a Volunteer Clock In icon on the device that
   opens full-screen, no browser address bar.
 - **Works offline** — a service worker caches the whole app on first load,
   so it keeps working with no WiFi or internet, indefinitely.

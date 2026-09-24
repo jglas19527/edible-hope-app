@@ -1,7 +1,7 @@
 {
-  "name": "Volunteer Sign In",
+  "name": "Volunteer Clock In",
   "short_name": "Volunteer",
-  "description": "Sign in and sign out as a volunteer",
+  "description": "Clock in and clock out as a volunteer",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

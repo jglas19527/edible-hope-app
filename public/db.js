@@ -108,7 +108,7 @@
 
   function signOut(volunteerId) {
     const session = getOpenSession(volunteerId);
-    if (!session) throw new Error('This volunteer is not currently signed in.');
+    if (!session) throw new Error('This volunteer is not currently clocked in.');
     session.signOutTime = new Date().toISOString();
     save();
     return session;
@@ -133,7 +133,7 @@
 
   function exportCsv() {
     const rows = listHistory();
-    const header = 'First Name,Last Name,Date,Sign In,Sign Out,Duration (minutes)';
+    const header = 'First Name,Last Name,Date,Clock In,Clock Out,Duration (minutes)';
     const esc = (v) => `"${String(v).replace(/"/g, '""')}"`;
     const lines = rows.map((r) => {
       const signIn = new Date(r.signInTime).toLocaleTimeString();

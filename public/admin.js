@@ -22,7 +22,7 @@
       const signInCell = document.createElement('td');
       signInCell.textContent = signIn;
       const signOutCell = document.createElement('td');
-      signOutCell.textContent = signOut || 'Still signed in';
+      signOutCell.textContent = signOut || 'Still clocked in';
       if (!r.signOutTime) signOutCell.classList.add('open-row');
       const durationCell = document.createElement('td');
       durationCell.textContent = duration;

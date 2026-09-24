@@ -13,5 +13,5 @@ const PORT = process.env.PORT || 3000;
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.listen(PORT, () => {
-  console.log(`Volunteer sign-in app running at http://localhost:${PORT}`);
+  console.log(`Volunteer clock-in app running at http://localhost:${PORT}`);
 });

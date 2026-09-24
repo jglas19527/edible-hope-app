@@ -59,7 +59,7 @@
       if (VolunteerDB.getOpenSession(v.id)) {
         const badge = document.createElement('span');
         badge.className = 'badge';
-        badge.textContent = 'Signed In';
+        badge.textContent = 'Clocked In';
         btn.appendChild(badge);
       }
       btn.addEventListener('click', () => openConfirm(v.id));
@@ -89,16 +89,16 @@
 
     if (openSession) {
       const signInTime = new Date(openSession.signInTime);
-      statusText.textContent = `Signed in at ${signInTime.toLocaleTimeString([], {
+      statusText.textContent = `Clocked in at ${signInTime.toLocaleTimeString([], {
         hour: 'numeric',
         minute: '2-digit',
       })} on ${signInTime.toLocaleDateString()}`;
-      actionBtn.textContent = 'SIGN OUT';
+      actionBtn.textContent = 'CLOCK OUT';
       actionBtn.className = 'btn btn-huge btn-action signed-in';
       actionBtn.onclick = () => doSignOut(volunteer.id);
     } else {
       statusText.textContent = 'Ready to volunteer today?';
-      actionBtn.textContent = 'SIGN IN';
+      actionBtn.textContent = 'CLOCK IN';
       actionBtn.className = 'btn btn-huge btn-action signed-out';
       actionBtn.onclick = () => doSignIn(volunteer.id);
     }
@@ -110,8 +110,8 @@
     const volunteer = VolunteerDB.getVolunteer(id);
     const session = VolunteerDB.signIn(id);
     showSuccess(
-      `You're signed in, ${volunteer.firstName}!`,
-      `Signed in at ${new Date(session.signInTime).toLocaleTimeString([], {
+      `You're clocked in, ${volunteer.firstName}!`,
+      `Clocked in at ${new Date(session.signInTime).toLocaleTimeString([], {
         hour: 'numeric',
         minute: '2-digit',
       })}. Thank you for volunteering!`
@@ -193,7 +193,7 @@
 
     showSuccess(
       `Welcome, ${volunteer.firstName}!`,
-      `You're all signed in as of ${new Date(session.signInTime).toLocaleTimeString([], {
+      `You're all clocked in as of ${new Date(session.signInTime).toLocaleTimeString([], {
         hour: 'numeric',
         minute: '2-digit',
       })}. Thanks for volunteering!`
