@@ -1,6 +1,6 @@
 // Cache-first app shell so the sign-in kiosk keeps working with zero
 // network connection once it has been opened one time.
-const CACHE_NAME = 'volunteer-app-shell-v2';
+const CACHE_NAME = 'volunteer-app-shell-v3';
 const APP_SHELL = [
   './',
   './index.html',
@@ -18,6 +18,7 @@ const APP_SHELL = [
   './icons/icon-512.png',
   './icons/icon-maskable-512.png',
   './icons/apple-touch-icon.png',
+  './icons/logo.png',
 ];
 
 self.addEventListener('install', (event) => {

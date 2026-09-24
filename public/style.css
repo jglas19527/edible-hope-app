@@ -1,13 +1,16 @@
 :root {
-  --color-primary: #1a6b3c;
-  --color-primary-dark: #124d2b;
+  /* Edible Hope Kitchen brand colors, sampled from their logo. */
+  --color-primary: #03989e;
+  --color-primary-dark: #026d71;
+  --color-accent: #ffc151;
+  --color-accent-text: #6b4400;
   --color-danger: #b3261e;
   --color-danger-dark: #8c1d17;
-  --color-bg: #f5f6f4;
+  --color-bg: #faf7f2;
   --color-card: #ffffff;
-  --color-text: #17201b;
-  --color-muted: #5b6960;
-  --color-border: #d6dbd6;
+  --color-text: #1c2321;
+  --color-muted: #626a68;
+  --color-border: #dcded9;
 }
 
 * {
@@ -31,6 +34,21 @@ html, body {
   padding: 24px 32px;
   background: var(--color-primary);
   color: #fff;
+}
+
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.topbar-logo {
+  height: 44px;
+  width: 44px;
+  border-radius: 10px;
+  background: #fff;
+  padding: 3px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
 }
 
 .topbar h1 {
@@ -148,7 +166,7 @@ html, body {
 }
 
 .volunteer-btn:active {
-  background: #eef2ee;
+  background: #e6f5f5;
 }
 
 .badge {
@@ -156,8 +174,8 @@ html, body {
   font-weight: 700;
   padding: 6px 14px;
   border-radius: 999px;
-  background: var(--color-primary);
-  color: #fff;
+  background: var(--color-accent);
+  color: var(--color-accent-text);
   white-space: nowrap;
 }
 

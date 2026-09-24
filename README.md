@@ -8,6 +8,11 @@ It's an installable, offline-first web app (PWA): once it has been opened
 one time, it keeps working with **no network connection at all**, and it
 can be installed to a tablet's or computer's home screen like a native app.
 
+Branded for **St. Luke's Edible Hope Kitchen** (Seattle) — the color
+palette (`--color-primary: #03989e` teal, `--color-accent: #ffc151` amber)
+and app icons (`public/icons/`) are sampled/cropped directly from their
+"Edible Hope" mug logo.
+
 ## Features
 
 - **Huge, touch-friendly buttons** — nothing tiny to tap.
