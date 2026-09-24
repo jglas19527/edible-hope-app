@@ -16,15 +16,16 @@
   function load() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return { volunteers: [], sessions: [] };
+      if (!raw) return { volunteers: [], sessions: [], meals: [] };
       const parsed = JSON.parse(raw);
       return {
         volunteers: parsed.volunteers || [],
         sessions: parsed.sessions || [],
+        meals: parsed.meals || [],
       };
     } catch (e) {
       console.error('Could not read saved volunteer data; starting fresh.', e);
-      return { volunteers: [], sessions: [] };
+      return { volunteers: [], sessions: [], meals: [] };
     }
   }
 
@@ -131,6 +132,111 @@
       });
   }
 
+  // --- Meals served ---
+
+  function listMeals() {
+    return [...db.meals].sort((a, b) => b.date.localeCompare(a.date));
+  }
+
+  function getMealsForDate(date) {
+    return db.meals.find((m) => m.date === date) || null;
+  }
+
+  // One entry per date; calling this again for the same date overwrites
+  // the count rather than adding a second entry.
+  function setMealsForDate(date, count) {
+    if (!date) throw new Error('Date is required.');
+    const n = Number(count);
+    if (!Number.isFinite(n) || n < 0) {
+      throw new Error('Meals served must be a positive number.');
+    }
+    let entry = getMealsForDate(date);
+    if (entry) {
+      entry.count = Math.round(n);
+      entry.updatedAt = new Date().toISOString();
+    } else {
+      entry = { id: uuid(), date, count: Math.round(n), updatedAt: new Date().toISOString() };
+      db.meals.push(entry);
+    }
+    save();
+    return entry;
+  }
+
+  function deleteMeals(date) {
+    db.meals = db.meals.filter((m) => m.date !== date);
+    save();
+  }
+
+  // --- Dashboard stats ---
+
+  function getVolunteerStats() {
+    const now = new Date();
+    const weekAgo = new Date(now);
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    const monthAgo = new Date(now);
+    monthAgo.setDate(monthAgo.getDate() - 30);
+
+    let totalMinutes = 0;
+    let weekMinutes = 0;
+    let monthMinutes = 0;
+    const perVolunteerMinutes = {};
+
+    db.sessions.forEach((s) => {
+      if (!s.signOutTime) return; // only completed sessions count toward hours
+      const inTime = new Date(s.signInTime);
+      const outTime = new Date(s.signOutTime);
+      const minutes = (outTime - inTime) / 60000;
+      if (minutes <= 0) return;
+      totalMinutes += minutes;
+      if (inTime >= weekAgo) weekMinutes += minutes;
+      if (inTime >= monthAgo) monthMinutes += minutes;
+      perVolunteerMinutes[s.volunteerId] = (perVolunteerMinutes[s.volunteerId] || 0) + minutes;
+    });
+
+    const topVolunteers = Object.entries(perVolunteerMinutes)
+      .map(([id, minutes]) => {
+        const v = getVolunteer(id);
+        return {
+          id,
+          name: v ? `${v.firstName} ${v.lastName}` : '(deleted volunteer)',
+          hours: minutes / 60,
+        };
+      })
+      .sort((a, b) => b.hours - a.hours)
+      .slice(0, 10);
+
+    return {
+      totalVolunteers: db.volunteers.length,
+      currentlyClockedIn: db.sessions.filter((s) => !s.signOutTime).length,
+      totalVisits: db.sessions.length,
+      totalHours: totalMinutes / 60,
+      weekHours: weekMinutes / 60,
+      monthHours: monthMinutes / 60,
+      topVolunteers,
+    };
+  }
+
+  function getMealStats() {
+    const now = new Date();
+    const weekAgoDate = new Date(now);
+    weekAgoDate.setDate(weekAgoDate.getDate() - 6); // last 7 days including today
+    const monthAgoDate = new Date(now);
+    monthAgoDate.setDate(monthAgoDate.getDate() - 29); // last 30 days including today
+    const weekAgo = todayStr(weekAgoDate);
+    const monthAgo = todayStr(monthAgoDate);
+
+    let totalMeals = 0;
+    let weekMeals = 0;
+    let monthMeals = 0;
+    db.meals.forEach((m) => {
+      totalMeals += m.count;
+      if (m.date >= weekAgo) weekMeals += m.count;
+      if (m.date >= monthAgo) monthMeals += m.count;
+    });
+
+    return { totalMeals, weekMeals, monthMeals, entries: listMeals() };
+  }
+
   function exportCsv() {
     const rows = listHistory();
     const header = 'First Name,Last Name,Date,Clock In,Clock Out,Duration (minutes)';
@@ -154,5 +260,11 @@
     signOut,
     listHistory,
     exportCsv,
+    listMeals,
+    getMealsForDate,
+    setMealsForDate,
+    deleteMeals,
+    getVolunteerStats,
+    getMealStats,
   };
 })(window);
