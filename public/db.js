@@ -1,5 +1,13 @@
 // Client-side data store. Everything lives in this browser's localStorage,
 // so the app works with zero network connection once it has loaded once.
+//
+// Inside the native iPad wrapper (see /ios), there is no real localStorage
+// persistence to rely on: bundled file:// content gets a fresh origin each
+// time Xcode rebuilds/reinstalls the app, so localStorage would silently
+// reset. That wrapper instead injects the last-saved data into
+// window.__NATIVE_BOOTSTRAP_DB__ before this script runs, and exposes
+// window.webkit.messageHandlers.nativeBridge to receive saves, which get
+// written to a file in the app's persistent Documents directory instead.
 (function (global) {
   const STORAGE_KEY = 'volunteer-app-db-v1';
 
@@ -13,11 +21,20 @@
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
   }
 
+  function hasNativeBridge() {
+    return !!(global.webkit && global.webkit.messageHandlers && global.webkit.messageHandlers.nativeBridge);
+  }
+
   function load() {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const bootstrapped = typeof global.__NATIVE_BOOTSTRAP_DB__ !== 'undefined'
+        ? global.__NATIVE_BOOTSTRAP_DB__
+        : undefined;
+      const raw = bootstrapped !== undefined && bootstrapped !== null
+        ? bootstrapped
+        : localStorage.getItem(STORAGE_KEY);
       if (!raw) return { volunteers: [], sessions: [], meals: [] };
-      const parsed = JSON.parse(raw);
+      const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
       return {
         volunteers: parsed.volunteers || [],
         sessions: parsed.sessions || [],
@@ -32,7 +49,16 @@
   let db = load();
 
   function save() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+    const json = JSON.stringify(db);
+    try {
+      localStorage.setItem(STORAGE_KEY, json);
+    } catch (e) {
+      // localStorage can be unavailable/unreliable under a file:// origin;
+      // the native bridge below is the real persistence path there.
+    }
+    if (hasNativeBridge()) {
+      global.webkit.messageHandlers.nativeBridge.postMessage(json);
+    }
   }
 
   function uuid() {
