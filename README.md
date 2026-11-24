@@ -99,6 +99,13 @@ won't be installable or reliably cache for offline use — run the server on
 the same device as the browser, or put it behind HTTPS if hosting
 elsewhere.
 
+### A device that never gets internet access, not even once
+
+The PWA above still needs one brief moment of connectivity to install. If
+an iPad genuinely can't ever get online, see **[`ios/README.md`](ios/)**
+for a native-wrapper build (via a Mac + Xcode) with no network dependency
+at all.
+
 ## Project structure
 
 - `server.js` — a plain static file server (`npm start`); it has no
